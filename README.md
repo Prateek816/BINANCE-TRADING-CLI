@@ -1,6 +1,6 @@
 ```bash
 trading_bot/
-[cite_start]├── cli.py              # Application entry point and CLI layer
+├── cli.py              # Application entry point and CLI layer
 ├── bot/
 │    ├── __init__.py     # Package initialization
 |    ├── client.py       # Binance API wrapper and authentication 
