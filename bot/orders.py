@@ -1,6 +1,6 @@
 import logging
-
-logger = logging.getLogger(__name__)
+from bot.logging_config import get_logger
+logger = get_logger(__name__)
 
 def execute_order(client, symbol, side, order_type, quantity, price=None):
     """
@@ -18,33 +18,30 @@ def execute_order(client, symbol, side, order_type, quantity, price=None):
         if price is None:
             return {"error": True, "message": "Price is required for LIMIT orders"}
         params["price"] = price
-        params["timeInForce"] = "GTC"  # Good 'Til Canceled is the standard default
+        params["timeInForce"] = "GTC" 
 
     logger.info(f"Preparing {order_type} {side} order for {symbol}")
 
     response = client.place_order(params)
 
-    # 4. Process and format the response [cite: 28, 29]
     return process_order_response(response)
 
 def process_order_response(response):
     """
     Extracts specific details from the Binance API response for the CLI output.
     """
-    # Check if the client returned an error (network or API validation) [cite: 32]
     if "error" in response:
         return {
             "success": False,
             "message": f"Order Failed: {response.get('message')}"
         }
 
-    # Extract required fields for the "Order Response Details" 
     order_data = {
         "success": True,
         "orderId": response.get("orderId"),
         "status": response.get("status"),
         "executedQty": response.get("executedQty"),
-        "avgPrice": response.get("avgPrice", "0.00"), # avgPrice may be 0 for new LIMIT orders
+        "avgPrice": response.get("avgPrice", "0.00"), 
         "symbol": response.get("symbol"),
         "side": response.get("side"),
         "type": response.get("type")
