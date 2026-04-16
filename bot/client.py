@@ -9,7 +9,7 @@ from urllib.parse import urlencode
 from binance.exceptions import BinanceAPIException
 from bot.logging_config import setup_logging
 
-setup_logging(level="DEBUG", log_file="app.log") # see about logging part
+setup_logging(level="DEBUG", log_file="app.log") 
 
 
 load_dotenv()
@@ -26,14 +26,12 @@ import requests
 import logging
 from urllib.parse import urlencode
 
-# Note: In a real scenario, use environment variables for keys
 class BinanceClient:
     def __init__(self, api_key, secret_key):
         self.base_url = "https://testnet.binancefuture.com" 
         self.api_key = api_key
         self.secret_key = secret_key
         self.headers = {"X-MBX-APIKEY": self.api_key}
-        # Logging should be configured in logging_config.py as per instructions [cite: 56]
         self.logger = logging.getLogger(__name__)
 
     def _generate_signature(self, params):
@@ -64,7 +62,6 @@ class BinanceClient:
             else:
                 response = requests.post(url, params=params, headers=self.headers, timeout=10)
 
-            # Check for HTTP errors 
             response.raise_for_status()
             data = response.json()
             
@@ -73,7 +70,6 @@ class BinanceClient:
 
         except requests.exceptions.RequestException as e:
             self.logger.error(f"API Request failed: {e}")
-            # Providing clear failure messages as required [cite: 29]
             if hasattr(e.response, 'json'):
                 return {"error": True, "message": e.response.json()}
             return {"error": True, "message": str(e)}
@@ -89,7 +85,3 @@ class BinanceClient:
     def get_account_balance(self):
         """Private endpoint to check USDT balance[cite: 23]."""
         return self._request("GET", "/fapi/v2/account", signed=True)
-
-    def place_order(self, order_params):
-        """Private endpoint for order placement[cite: 18]."""
-        return self._request("POST", "/fapi/v1/order", params=order_params, signed=True)
