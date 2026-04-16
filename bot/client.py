@@ -1,30 +1,14 @@
 import os
-from binance import Client
 from dotenv import load_dotenv
-import requests
-import time
-import hmac
-import hashlib
-from urllib.parse import urlencode
-from binance.exceptions import BinanceAPIException
-from bot.logging_config import setup_logging
-
-setup_logging(level="DEBUG", log_file="app.log") 
-
-
-load_dotenv()
-
-api_key = os.getenv("BINANCE_API_KEY")
-api_secret = os.getenv("BINANCE_API_SECRET")
-
-
-
+from bot.logging_config import get_logger
 import hmac
 import hashlib
 import time
 import requests
 import logging
 from urllib.parse import urlencode
+logger = get_logger(__name__)
+load_dotenv()
 
 class BinanceClient:
     def __init__(self, api_key, secret_key):
@@ -65,11 +49,11 @@ class BinanceClient:
             response.raise_for_status()
             data = response.json()
             
-            self.logger.info(f"Response from {endpoint}: {data}") 
+            self.logger.info(f"Response from {endpoint} Sucsess ") 
             return data
 
         except requests.exceptions.RequestException as e:
-            self.logger.error(f"API Request failed: {e}")
+            self.logger.error(f"Response Failed , API Request failed: {e}")
             if hasattr(e.response, 'json'):
                 return {"error": True, "message": e.response.json()}
             return {"error": True, "message": str(e)}
@@ -85,3 +69,15 @@ class BinanceClient:
     def get_account_balance(self):
         """Private endpoint to check USDT balance[cite: 23]."""
         return self._request("GET", "/fapi/v2/account", signed=True)
+
+    def place_order(self, order_params):
+        """
+        Private endpoint for order placement (POST /fapi/v1/order).
+        This method is called by orders.py to execute the trade[cite: 31].
+        """
+        return self._request("POST", "/fapi/v1/order", params=order_params, signed=True)
+    
+    def get_open_orders(self, symbol):
+        return self._request("GET", "/fapi/v1/openOrders", 
+                            {"symbol": symbol.upper()}, signed=True)
+    

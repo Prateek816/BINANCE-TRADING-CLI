@@ -5,11 +5,22 @@ from bot.orders import execute_order
 from bot.validator import Validator
 from bot.logging_config import setup_logging, get_logger
 
-setup_logging()
+setup_logging(level="DEBUG", log_file="app.log")
 logger = get_logger(__name__)
 from dotenv import load_dotenv
 import os
-load_dotenv()
+def load_credentials():
+    load_dotenv()
+    api_key = os.getenv('BINANCE_API_KEY')
+    secret_key = os.getenv('BINANCE_SECRET_KEY')
+    if not api_key or not secret_key:
+        logger.critical("API credentials not found.")
+        sys.exit(1)
+    return api_key, secret_key
+
+api_key , secret_key = load_credentials()
+
+
 
 def main():
     parser = argparse.ArgumentParser(description="Binance Futures Testnet Trading Bot")
@@ -21,8 +32,9 @@ def main():
 
     args = parser.parse_args()
 
-    client = BinanceClient(api_key = os.environ['BINANCE_API_KEY'],secret_key = os.environ['BINANCE_SECRET_KEY'])
-
+    client = BinanceClient(api_key =api_key,secret_key = secret_key)
+    print(client.get_open_orders("BTCUSDT"))
+    print("11111111")
     try:
         logger.info("Fetching exchange info for validation...")
         exchange_info = client.get_exchange_info()
