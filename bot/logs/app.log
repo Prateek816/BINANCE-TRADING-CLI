@@ -1,0 +1,2 @@
+2026-04-16 09:41:21 | INFO     | orders:23 | Preparing MARKET BUY order for BTCUSDT
+2026-04-16 09:41:21 | INFO     | client:60 | Sending POST request to /fapi/v1/order with params: {'symbol': 'BTCUSDT', 'side': 'BUY', 'type': 'MARKET', 'quantity': 0.001, 'timestamp': 1776312681041, 'signature': '55a675e091bb7d6a000527d7eb26ea261310c2cda9a883d699bf46088a39752f'}
